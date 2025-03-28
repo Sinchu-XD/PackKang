@@ -18,7 +18,10 @@ SESSION_NAME = os.getenv("SESSION_NAME", "BQBuoD8AtOwxLV-QRgi1IWpNidBHfwrIGV_5Im
 SUDO_USERS = list(map(int, os.getenv("SUDO_USERS", "7862043458").split(",")))
 
 # Initialize Userbot Client (MUST use a Userbot, NOT a Bot Token)
-app = Client(SESSION_NAME, api_id=API_ID, api_hash=API_HASH)
+
+app = Client(
+    name="sticker_kang_robot", api_id=API_ID, api_hash=API_HASH, session_string=SESSION_NAME
+)
 
 @app.on_message(filters.command("kangpack") & filters.reply)
 async def kang_sticker_pack(client: Client, message: Message):
