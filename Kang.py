@@ -15,7 +15,7 @@ API_HASH = os.getenv("API_HASH", "7e709c0f5a2b8ed7d5f90a48219cffd3")
 SESSION_NAME = os.getenv("SESSION_NAME", "BQBuoD8AtOwxLV-QRgi1IWpNidBHfwrIGV_5Imu1W5c_gOrWNumbb_zoZpp3NDSadfXkdFUk_bIc_UGDGnj4vTXt3VtLpWW9_lnmdjarZ4UuR9IkomRyM-FkdCoCTbUBzw_6a4j1z_fjGiWxW98WZ6CF1EVy3AfHFRBqrcn6-z4B2R-FhgPeew_CYk8vmXEpjYu4JK9EEGF8k-abTqI0GuGJ5W6pWNqa7QmB6rWPODMDkH21_DAgo8tsTVQId01dGrWso24MihswteFdRAzhA4Xho1_OXxN7amFL0WYsXEqRFh5tpIhW4jZ8KIMteqgfkgDsRRYjYCppGIs5tW7xwrS9AnzPewAAAAHjq--iAA")
 
 # Add SUDO users (comma-separated user IDs)
-SUDO_USERS = list(map(int, os.getenv("SUDO_USERS", 7862043458).split(",")))
+SUDO_USERS = list(map(int, os.getenv("SUDO_USERS", "7862043458").split(",")))
 
 # Initialize Userbot Client (MUST use a Userbot, NOT a Bot Token)
 app = Client(SESSION_NAME, api_id=API_ID, api_hash=API_HASH)
