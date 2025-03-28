@@ -1,7 +1,7 @@
 import os
 from pyrogram import Client, filters
-from pyrogram.raw.functions.messages import GetStickerSet
-from pyrogram.raw.types import InputStickerSetShortName, Document
+from pyrogram.raw.functions.messages import GetStickerSet, GetDocumentByHash
+from pyrogram.raw.types import InputStickerSetShortName
 from pyrogram.types import Message
 
 # 🔹 Telegram API Credentials (Get from my.telegram.org)
@@ -26,13 +26,13 @@ async def kang_sticker_pack(client: Client, message: Message):
         return await message.reply_text("❌ This sticker is not from a pack.")
 
     try:
-        # ✅ Correct Pyrofork API Call
+        # ✅ Fetch sticker set details correctly
         sticker_set = await client.invoke(GetStickerSet(stickerset=InputStickerSetShortName(short_name=sticker_set_name), hash=0))
-        
+
         # 🔹 Extract sticker documents
-        stickers = getattr(sticker_set, "documents", None)
+        stickers = getattr(sticker_set, "documents", [])
         if not stickers:
-            return await message.reply_text("❌ No sticker documents found in this pack.")
+            return await message.reply_text("❌ No stickers found in this pack.")
 
     except Exception as e:
         return await message.reply_text(f"❌ Error fetching sticker pack: `{str(e)}`")
@@ -42,12 +42,17 @@ async def kang_sticker_pack(client: Client, message: Message):
     sticker_files = []
 
     for sticker_doc in stickers:
-        if not isinstance(sticker_doc, Document):
-            continue
-
         try:
-            # ✅ Download sticker correctly
-            sticker_file = await client.download_media(sticker_doc)
+            # ✅ Extract required fields for download
+            file_id = sticker_doc.id
+            access_hash = sticker_doc.access_hash
+            file_reference = sticker_doc.file_reference
+
+            # ✅ Fetch document using GetDocumentByHash
+            document = await client.invoke(GetDocumentByHash(id=file_id, access_hash=access_hash, file_reference=file_reference))
+
+            # ✅ Download sticker properly
+            sticker_file = await client.download_media(document)
             sticker_files.append(sticker_file)
 
         except Exception as e:
