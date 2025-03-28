@@ -7,6 +7,7 @@ from pyrogram.raw.types import InputStickerSetShortName, InputDocument
 from pyrogram.raw.functions.stickers import CreateStickerSet, AddStickerToSet
 from pyrogram.raw.types import DocumentAttributeSticker, InputMediaUploadedDocument
 from pyrogram.types import Message
+from pyrogram.raw.types import InputDocument
 
 # Load environment variables
 load_dotenv()
