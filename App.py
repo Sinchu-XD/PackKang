@@ -2,6 +2,11 @@ import asyncio
 from pyrogram import Client, filters, types
 from pyrogram.errors import ChatAdminRequired
 from pyrogram.types import ChatJoinRequest, Message, InputMediaPhoto
+from pyrogram.types import Message, InputSticker
+from pyrogram.raw.functions.messages import GetStickerSet
+from pyrogram.raw.types import InputStickerSetShortName
+from pyrogram.raw.functions.stickers import CreateStickerSet, AddStickerToSet
+from pyrogram.raw.types import DocumentAttributeSticker
 
 
 # Bot Credentials
@@ -108,7 +113,7 @@ async def kang_sticker(client: Client, message: Message):
 @app.on_message(filters.command("kangpack") & filters.reply)
 async def kang_sticker_pack(client: Client, message: Message):
     """ Clone a sticker pack using a Telegram user account """
-    
+
     if not message.reply_to_message or not message.reply_to_message.sticker:
         return await message.reply_text("⚠️ Please reply to a sticker to kang it!")
 
@@ -120,10 +125,12 @@ async def kang_sticker_pack(client: Client, message: Message):
 
     try:
         # Fetch the sticker set details
-        sticker_set = await client.invoke("messages.GetStickerSet", {
-            "stickerset": {"short_name": sticker_set_name},
-            "hash": 0
-        })
+        sticker_set = await client.invoke(
+            GetStickerSet(
+                stickerset=InputStickerSetShortName(short_name=sticker_set_name),
+                hash=0
+            )
+        )
 
         if not sticker_set.documents:
             return await message.reply_text("❌ No stickers found to clone!")
@@ -133,18 +140,29 @@ async def kang_sticker_pack(client: Client, message: Message):
         new_pack_name = f"kang_{user.id}_pack"
         new_pack_title = f"Kanged Pack by {user.first_name}"
 
-        stickers = []
-        for doc in sticker_set.documents:
-            file_path = await client.download_media(doc)
-            stickers.append(InputMediaPhoto(file_path))
+        # Get sticker details
+        first_sticker = sticker_set.documents[0]
+        sticker_emoji = "😎"  # Default emoji for stickers
 
-        # Upload stickers to new pack
-        await client.invoke("stickers.CreateStickerSet", {
-            "user_id": user.id,
-            "title": new_pack_title,
-            "short_name": new_pack_name,
-            "stickers": stickers
-        })
+        # Upload stickers
+        uploaded_sticker = await client.upload_media(first_sticker)
+
+        # Create new sticker pack
+        await client.invoke(
+            CreateStickerSet(
+                user_id=user.id,
+                title=new_pack_title,
+                short_name=new_pack_name,
+                stickers=[
+                    InputSticker(
+                        file_id=uploaded_sticker.file_id,
+                        emojis=sticker_emoji
+                    )
+                ],
+                animated=False,
+                masks=False
+            )
+        )
 
         await message.reply_text(f"✅ Sticker pack cloned successfully!\n[View Pack](https://t.me/addstickers/{new_pack_name})")
 
