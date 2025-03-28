@@ -1,6 +1,8 @@
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.errors import ChatAdminRequired
+from pyrogram.types import ChatJoinRequest, Message
+
 
 # Bot Credentials
 API_ID = 25024171  # Replace with your API ID
@@ -10,7 +12,7 @@ BOT_TOKEN = "7043644719:AAFtq9vIrC9yRuY3Ge7Om8lYoEAGGadwR7Y"  # Replace with you
 # Initialize Bot
 app = Client("approve_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-@app.on_message(filters.command("approve") & filters.group)
+@app.on_message(filters.command("approveall") & filters.group)
 async def approve_requests(client, message):
     """ Approves all pending join requests in a group or channel """
     chat_id = message.chat.id
