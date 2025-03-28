@@ -157,10 +157,12 @@ async def kang_sticker_pack(client: Client, message: Message):
                 title=new_pack_title,
                 short_name=new_pack_name,
                 stickers=[
-                    InputSticker(
-                        file_id=first_sticker.id,  # ✅ Correct sticker file reference
-                        emoji="🔥"
-                    )
+                    sticker = InputDocument(
+                    id=uploaded.id,
+                    access_hash=uploaded.access_hash,
+    file_reference=uploaded.file_reference
+)
+
                 ],
                 animated=False,
                 masks=False
