@@ -1,7 +1,7 @@
 import asyncio
-from pyrogram import Client, filters
+from pyrogram import Client, filters, types
 from pyrogram.errors import ChatAdminRequired
-from pyrogram.types import ChatJoinRequest, Message
+from pyrogram.types import ChatJoinRequest, Message, InputMediaPhoto
 
 
 # Bot Credentials
