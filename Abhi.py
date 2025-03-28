@@ -1,6 +1,6 @@
 import os
 from pyrogram import Client, filters
-from pyrogram.raw.functions.messages import GetStickerSet
+from pyrogram.raw.functions.messages import GetStickerSet, GetDocumentById
 from pyrogram.raw.types import InputStickerSetShortName
 from pyrogram.types import Message, InputMediaDocument
 
@@ -39,9 +39,16 @@ async def kang_sticker_pack(client: Client, message: Message):
 
     await message.reply_text(f"⚡ Cloning **{sticker_set.set.title}** ({len(sticker_set.packs)} stickers)...")
 
-    # ✅ FIX: Use `sticker_set.documents` directly (No `.file_id`)
+    # ✅ FIX: Use `sticker_set.documents` correctly
     for sticker_doc in sticker_set.documents:
-        sticker_file = await client.download_media(sticker_doc)  # ✅ FIXED
+        try:
+            # ✅ FIX: Get full document info before downloading
+            full_doc = await client.invoke(GetDocumentById(id=[sticker_doc.id], access_hash=[sticker_doc.access_hash]))
+            sticker_file = await client.download_media(full_doc[0])  # ✅ Proper download
+        except Exception as e:
+            print(f"⚠ Failed to download sticker: {e}")
+            continue
+
         if sticker_file:
             input_stickers.append(InputMediaDocument(sticker_file))  # ✅ Pyrofork-Compatible
             sticker_files.append(sticker_file)
