@@ -1,8 +1,9 @@
 import os
+from typing import List  # Fixed for Python 3.8
 from pyrogram import Client, filters
 from pyrogram.types import Message, InputSticker
 
-# Telegram API Credentials (Get from my.telegram.org)
+# 🔹 Telegram API Credentials (Get from my.telegram.org)
 API_ID = 25024171  
 API_HASH = "7e709c0f5a2b8ed7d5f90a48219cffd3"
 BOT_TOKEN = "7043644719:AAFtq9vIrC9yRuY3Ge7Om8lYoEAGGadwR7Y"
@@ -12,10 +13,10 @@ app = Client("sticker_kang_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT
 @app.on_message(filters.command("kangpack") & filters.reply)
 async def kang_sticker_pack(client: Client, message: Message):
     """Clone an entire sticker pack in one command."""
-    
+
     if not message.reply_to_message or not message.reply_to_message.sticker:
         return await message.reply_text("❌ Reply to a sticker to clone the entire pack.")
-    
+
     sticker = message.reply_to_message.sticker
     sticker_set_name = sticker.set_name
 
@@ -51,9 +52,9 @@ async def kang_sticker_pack(client: Client, message: Message):
         except:
             await client.create_sticker_set(user.id, new_pack_name, new_pack_title, stickers=stickers)
             msg = f"✅ New sticker pack created! [View Pack](https://t.me/addstickers/{new_pack_name})"
-        
+
         await message.reply_text(msg)
-    
+
     except Exception as e:
         await message.reply_text(f"❌ Failed to create sticker pack: `{str(e)}`")
 
