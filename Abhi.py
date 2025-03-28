@@ -1,6 +1,6 @@
 import os
 from pyrogram import Client, filters
-from pyrogram.raw.functions.messages import GetStickerSet, GetDocumentById
+from pyrogram.raw.functions.messages import GetStickerSet, GetDocumentByHash
 from pyrogram.raw.types import InputStickerSetShortName
 from pyrogram.types import Message, InputMediaDocument
 
