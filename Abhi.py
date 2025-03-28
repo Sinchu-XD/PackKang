@@ -14,7 +14,7 @@ app = Client("sticker_kang_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT
 
 @app.on_message(filters.command("kangpack") & filters.reply)
 async def kang_sticker_pack(client: Client, message: Message):
-    """Clone an entire sticker pack in one command."""
+    """Clone an entire sticker pack using Pyrofork."""
 
     if not message.reply_to_message or not message.reply_to_message.sticker:
         return await message.reply_text("❌ Reply to a sticker to clone the entire pack.")
@@ -26,8 +26,8 @@ async def kang_sticker_pack(client: Client, message: Message):
         return await message.reply_text("❌ This sticker is not from a pack.")
 
     try:
-        # ✅ Correct API Call to fetch sticker set
-        sticker_set = await client.invoke(GetStickerSet(stickerset=InputStickerSetShortName(short_name=sticker_set_name)))
+        # ✅ Correct Pyrofork API Call (Add `hash=0`)
+        sticker_set = await client.invoke(GetStickerSet(stickerset=InputStickerSetShortName(short_name=sticker_set_name), hash=0))
     except Exception as e:
         return await message.reply_text(f"❌ Error fetching sticker pack: `{str(e)}`")
 
@@ -43,7 +43,7 @@ async def kang_sticker_pack(client: Client, message: Message):
     for sticker in sticker_set.documents:
         sticker_file = await client.download_media(sticker)
         if sticker_file:
-            input_stickers.append(InputMediaDocument(sticker_file))  # ✅ FIX: Use InputMediaDocument
+            input_stickers.append(InputMediaDocument(sticker_file))  # ✅ Pyrofork-Compatible
             sticker_files.append(sticker_file)
 
     try:
