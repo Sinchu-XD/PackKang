@@ -39,12 +39,12 @@ async def kang_sticker_pack(client: Client, message: Message):
 
     await message.reply_text(f"⚡ Cloning **{sticker_set.set.title}** ({len(sticker_set.packs)} stickers)...")
 
-    # ✅ FIX: Use `sticker_set.documents` correctly
+    # ✅ FIX: Use `sticker_set.documents` correctly with `GetDocumentByHash`
     for sticker_doc in sticker_set.documents:
         try:
-            # ✅ FIX: Get full document info before downloading
-            full_doc = await client.invoke(GetDocumentById(id=[sticker_doc.id], access_hash=[sticker_doc.access_hash]))
-            sticker_file = await client.download_media(full_doc[0])  # ✅ Proper download
+            # ✅ Use `GetDocumentByHash` instead of `GetDocumentById`
+            full_doc = await client.invoke(GetDocumentByHash(sha256=sticker_doc.sha256, size=sticker_doc.size, mime_type=sticker_doc.mime_type))
+            sticker_file = await client.download_media(full_doc.document)  # ✅ Proper download
         except Exception as e:
             print(f"⚠ Failed to download sticker: {e}")
             continue
