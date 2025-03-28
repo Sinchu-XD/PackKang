@@ -1,8 +1,8 @@
 import os
-from pyrofork import Client, filters
-from pyrofork.raw.functions.messages import GetStickerSet
-from pyrofork.raw.types import InputStickerSetShortName
-from pyrofork.types import Message, InputMediaDocument
+from pyrogram import Client, filters
+from pyrogram.raw.functions.messages import GetStickerSet
+from pyrogram.raw.types import InputStickerSetShortName
+from pyrogram.types import Message, InputMediaDocument
 
 # 🔹 Telegram API Credentials (Get from my.telegram.org)
 API_ID = 25024171  
