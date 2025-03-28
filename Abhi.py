@@ -24,8 +24,7 @@ async def kang_sticker_pack(client: Client, message: Message):
         return await message.reply_text("❌ This sticker is not from a pack.")
 
     try:
-        sticker_set = await client.get_sticker_set(sticker_set_name)
-        stickers = sticker_set.documents  # ✅ FIX: Correct attribute for fetching stickers
+        sticker_set = await client.invoke("messages.GetStickerSet", {"stickerset": {"_": "inputStickerSetShortName", "short_name": sticker_set_name}})
     except Exception as e:
         return await message.reply_text(f"❌ Error fetching sticker pack: `{str(e)}`")
 
@@ -34,11 +33,11 @@ async def kang_sticker_pack(client: Client, message: Message):
     new_pack_title = f"Kanged Pack by {user.first_name}"
 
     sticker_files = []  # Store sticker file paths for cleanup
-
-    await message.reply_text(f"⚡ Cloning **{sticker_set.title}** ({len(stickers)} stickers)...")
-
     input_stickers = []
-    for sticker in stickers:
+
+    await message.reply_text(f"⚡ Cloning **{sticker_set.set.title}** ({len(sticker_set.documents)} stickers)...")
+
+    for sticker in sticker_set.documents:
         sticker_file = await client.download_media(sticker)
         if sticker_file:
             input_stickers.append(InputMediaDocument(sticker_file))  # ✅ FIX: Use InputMediaDocument
