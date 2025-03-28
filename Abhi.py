@@ -62,6 +62,10 @@ async def kang_sticker_pack(client: Client, message: Message):
                 )
             )
 
+    # 🚨 **FIX: Ensure stickers exist before proceeding**
+    if not input_stickers:
+        return await message.reply_text("❌ No stickers found to clone!")
+
     try:
         # Check if the user already has a sticker pack
         try:
