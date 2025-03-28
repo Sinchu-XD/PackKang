@@ -1,7 +1,7 @@
 import asyncio
 import os
 from pyrogram import Client, filters
-from pyrogram.types import Message, InputSticker, InputMediaDocument
+from pyrogram.types import Message, InputSticker
 
 API_ID = 25024171  # Get from my.telegram.org
 API_HASH = "7e709c0f5a2b8ed7d5f90a48219cffd3"
@@ -30,18 +30,19 @@ async def kang_sticker_pack(client: Client, message: Message):
     new_pack_title = f"Kanged Pack by {user.first_name}"
 
     stickers = []
+    temp_files = []  # List to store downloaded sticker file paths
+
     for sticker in sticker_set.stickers:
         sticker_file = await client.download_media(sticker)
-        stickers.append(InputSticker(
-            sticker=InputMediaDocument(sticker_file), 
-            emojis=sticker.emoji or "✨"
-        ))
+        if sticker_file:
+            stickers.append(InputSticker(sticker=sticker_file, emojis=sticker.emoji or "✨"))
+            temp_files.append(sticker_file)  # Store file path for cleanup
 
     try:
         await client.create_sticker_set(
-            user_id=user.id,
-            name=new_pack_name,
-            title=new_pack_title,
+            user.id,
+            new_pack_name,
+            new_pack_title,
             stickers=stickers
         )
         await message.reply_text(f"Sticker pack successfully cloned! [View Pack](https://t.me/addstickers/{new_pack_name})")
@@ -49,8 +50,8 @@ async def kang_sticker_pack(client: Client, message: Message):
         await message.reply_text(f"Failed to create sticker pack: {str(e)}")
 
     # Clean up downloaded sticker files
-    for sticker in stickers:
-        os.remove(sticker.sticker.file_id)  
+    for file_path in temp_files:
+        os.remove(file_path)  
 
 print("Bot is running...")
 app.run()
