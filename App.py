@@ -1,40 +1,44 @@
 import asyncio
 from pyrogram import Client, filters
+from pyrogram.errors import ChatAdminRequired
 from pyrogram.types import ChatJoinRequest, Message
 
-# 🔹 Get API Credentials from my.telegram.org
-API_ID = 25024171  
-API_HASH = "7e709c0f5a2b8ed7d5f90a48219cffd3"
-BOT_TOKEN = "7043644719:AAFtq9vIrC9yRuY3Ge7Om8lYoEAGGadwR7Y"
+# Bot Credentials
+API_ID = 25024171  # Replace with your API ID
+API_HASH = "7e709c0f5a2b8ed7d5f90a48219cffd3"  # Replace with your API HASH
+BOT_TOKEN = "7043644719:AAFtq9vIrC9yRuY3Ge7Om8lYoEAGGadwR7Y"  # Replace with your BOT TOKEN
 
+# Initialize Bot
 app = Client("approve_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-
-@app.on_message(filters.command("approveall") & filters.chat)
-async def approve_all_requests(client: Client, message: Message):
-    """Approve all pending join requests in groups and channels."""
-
+@app.on_message(filters.command("approve") & filters.group)
+async def approve_requests(client, message):
+    """ Approves all pending join requests in a group/channel """
     chat_id = message.chat.id
 
-    # ✅ Ensure the user is an admin
-    user_status = await client.get_chat_member(chat_id, message.from_user.id)
-    if not user_status.privileges or not user_status.privileges.can_invite_users:
-        return await message.reply_text("❌ You must be an **Admin** with 'Add Users' permission!")
+    try:
+        # Get pending join requests
+        requests = await client.get_chat_join_requests(chat_id)
 
-    approved_count = 0
+        if not requests:
+            await message.reply_text("✅ No pending join requests found!")
+            return
 
-    async for join_request in client.get_chat_join_requests(chat_id):
-        try:
-            await client.approve_chat_join_request(chat_id, join_request.from_user.id)
+        approved_count = 0
+        for req in requests:
+            await client.approve_chat_join_request(chat_id, req.from_user.id)
             approved_count += 1
-            await asyncio.sleep(1)  # Prevents rate limiting
-        except Exception as e:
-            print(f"⚠ Failed to approve {join_request.from_user.id}: {e}")
+            await asyncio.sleep(1)  # Prevents floodwait
 
-    if approved_count == 0:
-        return await message.reply_text("✅ No pending join requests!")
+        await message.reply_text(f"✅ Approved {approved_count} join requests!")
+    
+    except ChatAdminRequired:
+        await message.reply_text("❌ I need admin rights to approve join requests!")
+    except Exception as e:
+        await message.reply_text(f"❌ Error: {str(e)}")
 
-    await message.reply_text(f"✅ Approved **{approved_count}** join requests!")
+print("✅ Bot is running...")
+app.run()
 
 
 @app.on_message(filters.command("approve") & filters.reply)
@@ -62,3 +66,4 @@ async def approve_single_request(client: Client, message: Message):
 
 print("✅ Bot is running...")
 app.run()
+9
