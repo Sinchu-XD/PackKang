@@ -177,7 +177,7 @@ async def kang_sticker_pack(client: Client, message: Message):
                     id=uploaded.id,
                     access_hash=uploaded.access_hash,
                     file_reference=uploaded.file_reference
-)
+
 
                     )
                 )
