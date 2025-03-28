@@ -3,9 +3,10 @@ from pyrogram import Client, filters, types
 from pyrogram.errors import ChatAdminRequired
 from pyrogram.types import ChatJoinRequest, Message, InputMediaPhoto
 from pyrogram.raw.functions.messages import GetStickerSet
-from pyrogram.raw.types import InputStickerSetShortName
+from pyrogram.raw.types import InputStickerSetShortName, InputDocument
 from pyrogram.raw.functions.stickers import CreateStickerSet, AddStickerToSet
-from pyrogram.raw.types import DocumentAttributeSticker
+from pyrogram.raw.types import DocumentAttributeSticker, InputMediaUploadedDocument
+from pyrogram.types import Message
 
 
 # Bot Credentials
