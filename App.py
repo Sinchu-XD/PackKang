@@ -11,34 +11,33 @@ BOT_TOKEN = "7043644719:AAFtq9vIrC9yRuY3Ge7Om8lYoEAGGadwR7Y"  # Replace with you
 # Initialize Bot
 app = Client("approve_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-@app.on_message(filters.command("approve") & filters.group)
+@app.on_message(filters.command("approveall") & filters.group)
 async def approve_requests(client, message):
     """ Approves all pending join requests in a group/channel """
     chat_id = message.chat.id
 
     try:
-        # Get pending join requests
-        requests = await client.get_chat_join_requests(chat_id)
-
-        if not requests:
-            await message.reply_text("✅ No pending join requests found!")
-            return
-
         approved_count = 0
-        for req in requests:
+
+        # Iterate over the async generator properly
+        async for req in client.get_chat_join_requests(chat_id):
             await client.approve_chat_join_request(chat_id, req.from_user.id)
             approved_count += 1
             await asyncio.sleep(1)  # Prevents floodwait
 
-        await message.reply_text(f"✅ Approved {approved_count} join requests!")
-    
+        if approved_count == 0:
+            await message.reply_text("✅ No pending join requests found!")
+        else:
+            await message.reply_text(f"✅ Approved {approved_count} join requests!")
+
     except ChatAdminRequired:
         await message.reply_text("❌ I need admin rights to approve join requests!")
     except Exception as e:
         await message.reply_text(f"❌ Error: {str(e)}")
 
 print("✅ Bot is running...")
-app.run()
+
+
 
 
 @app.on_message(filters.command("approve") & filters.reply)
