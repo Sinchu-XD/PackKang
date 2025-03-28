@@ -173,9 +173,12 @@ async def kang_sticker_pack(client: Client, message: Message):
                 AddStickerToSet(
                     user_id=user_peer,
                     stickerset=InputStickerSetShortName(short_name=new_pack_name),
-                    sticker=InputSticker(
-                        file_id=sticker.id,
-                        emoji="🔥"
+                    sticker=InputDocument(
+                    id=uploaded.id,
+                    access_hash=uploaded.access_hash,
+                    file_reference=uploaded.file_reference
+)
+
                     )
                 )
             )
