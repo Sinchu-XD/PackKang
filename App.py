@@ -133,11 +133,5 @@ async def start_command(client: Client, message: Message):
     """Handles the /start command."""
     await message.reply_text("Welcome to the Sticker Kanger Bot! Use /kang to kang a sticker, /kangpack to kang a whole pack!")
 
-async def main():
-    """Main function to start the bot."""
-    await app.start()
-    print("Bot started. Listening for commands...")
-    await asyncio.Future()  # Keep the bot running
-
-if __name__ == "__main__":
-    asyncio.run(main())
+app.run()
+print("Mar Ja Bc")
