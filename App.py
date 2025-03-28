@@ -19,9 +19,7 @@ async def approve_requests(client, message):
 
     try:
         approved_count = 0
-        requests = await client.get_chat_members(chat_id, filter="request")  # ✅ Using `get_chat_members`
-
-        for req in requests:
+        async for req in client.get_chat_members(chat_id, filter="request"):
             await client.approve_chat_join_request(chat_id, req.user.id)
             approved_count += 1
             await asyncio.sleep(1)  # Prevents floodwait
