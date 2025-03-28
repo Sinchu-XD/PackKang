@@ -1,7 +1,7 @@
 import os
 import asyncio
 from dotenv import load_dotenv
-from pyrofork import Client, filters
+from pyrogram import Client, filters
 from pyrogram.raw.functions.messages import GetStickerSet
 from pyrogram.raw.types import InputStickerSetShortName, InputDocument
 from pyrogram.raw.functions.stickers import CreateStickerSet, AddStickerToSet
