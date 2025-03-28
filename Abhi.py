@@ -1,9 +1,8 @@
 import os
-from typing import List
-from pyrogram import Client, filters
-from pyrogram.raw.functions.messages import GetStickerSet
-from pyrogram.raw.types import InputStickerSetShortName
-from pyrogram.types import Message, InputMediaDocument
+from pyrofork import Client, filters
+from pyrofork.raw.functions.messages import GetStickerSet
+from pyrofork.raw.types import InputStickerSetShortName
+from pyrofork.types import Message, InputMediaDocument
 
 # 🔹 Telegram API Credentials (Get from my.telegram.org)
 API_ID = 25024171  
@@ -26,7 +25,7 @@ async def kang_sticker_pack(client: Client, message: Message):
         return await message.reply_text("❌ This sticker is not from a pack.")
 
     try:
-        # ✅ Correct Pyrofork API Call (Add `hash=0`)
+        # ✅ Correct Pyrofork API Call (Added `hash=0`)
         sticker_set = await client.invoke(GetStickerSet(stickerset=InputStickerSetShortName(short_name=sticker_set_name), hash=0))
     except Exception as e:
         return await message.reply_text(f"❌ Error fetching sticker pack: `{str(e)}`")
@@ -40,8 +39,9 @@ async def kang_sticker_pack(client: Client, message: Message):
 
     await message.reply_text(f"⚡ Cloning **{sticker_set.set.title}** ({len(sticker_set.packs)} stickers)...")
 
-    for sticker in sticker_set.documents:
-        sticker_file = await client.download_media(sticker)
+    # ✅ FIX: Use `sticker_set.documents` directly (No `.file_id`)
+    for sticker_doc in sticker_set.documents:
+        sticker_file = await client.download_media(sticker_doc)  # ✅ FIXED
         if sticker_file:
             input_stickers.append(InputMediaDocument(sticker_file))  # ✅ Pyrofork-Compatible
             sticker_files.append(sticker_file)
