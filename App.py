@@ -1,7 +1,7 @@
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.errors import ChatAdminRequired
-from pyrogram.types import ChatJoinRequest, Message
+from pyrogram.types import ChatJoinRequest, Message, ChatMembersFilter
 
 
 # Bot Credentials
@@ -19,7 +19,9 @@ async def approve_requests(client, message):
 
     try:
         approved_count = 0
-        async for req in client.get_chat_members(chat_id, filter="request"):
+
+        # ✅ FIXED: Use the correct Enum `ChatMembersFilter.REQUESTS`
+        async for req in client.get_chat_members(chat_id, filter=ChatMembersFilter.REQUESTS):
             await client.approve_chat_join_request(chat_id, req.user.id)
             approved_count += 1
             await asyncio.sleep(1)  # Prevents floodwait
