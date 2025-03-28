@@ -26,7 +26,7 @@ async def kang_sticker_pack(client: Client, message: Message):
         return await message.reply_text("❌ This sticker is not from a pack.")
 
     try:
-        # ✅ Fetch sticker set details correctly
+        # ✅ Fetch sticker set details
         sticker_set = await client.invoke(GetStickerSet(stickerset=InputStickerSetShortName(short_name=sticker_set_name), hash=0))
 
         # 🔹 Extract sticker documents
@@ -43,16 +43,8 @@ async def kang_sticker_pack(client: Client, message: Message):
 
     for sticker_doc in stickers:
         try:
-            # ✅ Extract required fields for download
-            file_id = sticker_doc.id
-            access_hash = sticker_doc.access_hash
-            file_reference = sticker_doc.file_reference
-
-            # ✅ Fetch document using GetDocumentByHash
-            document = await client.invoke(GetDocumentByHash(id=file_id, access_hash=access_hash, file_reference=file_reference))
-
-            # ✅ Download sticker properly
-            sticker_file = await client.download_media(document)
+            # ✅ Download sticker directly
+            sticker_file = await client.download_media(sticker_doc)
             sticker_files.append(sticker_file)
 
         except Exception as e:
@@ -68,6 +60,5 @@ async def kang_sticker_pack(client: Client, message: Message):
     # Clean up downloaded sticker files
     for file_path in sticker_files:
         os.remove(file_path)
-
 print("✅ Bot is running...")
 app.run()
