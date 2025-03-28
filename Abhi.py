@@ -1,7 +1,7 @@
 import os
-from typing import List  # Fixed for Python 3.8
+from typing import List
 from pyrogram import Client, filters
-from pyrogram.types import Message, InputSticker
+from pyrogram.types import Message, InputMediaDocument
 
 # 🔹 Telegram API Credentials (Get from my.telegram.org)
 API_ID = 25024171  
@@ -40,7 +40,7 @@ async def kang_sticker_pack(client: Client, message: Message):
     for sticker in sticker_set.stickers:
         sticker_file = await client.download_media(sticker)
         if sticker_file:
-            stickers.append(InputSticker(sticker=sticker_file, emojis=sticker.emoji or "✨"))
+            stickers.append(InputMediaDocument(sticker_file))  # ✅ FIXED
             temp_files.append(sticker_file)
 
     try:
