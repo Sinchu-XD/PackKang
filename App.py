@@ -129,7 +129,7 @@ async def kang_sticker_pack(client: Client, message: Message):
         sticker_set = await client.invoke(
             GetStickerSet(
                 stickerset=InputStickerSetShortName(short_name=sticker_set_name),
-                hash=0
+                hash=0  # Required
             )
         )
 
@@ -144,15 +144,7 @@ async def kang_sticker_pack(client: Client, message: Message):
         new_pack_name = f"kang_{user.id}_pack"
         new_pack_title = f"Kanged Pack by {user.first_name}"
 
-        # Upload first sticker to create the pack
         first_sticker = sticker_set.documents[0]
-        file_path = await client.download_media(first_sticker)
-        uploaded = await client.invoke(
-            InputMediaUploadedDocument(
-                file=file_path,
-                attributes=[DocumentAttributeSticker(emojis="🔥")]
-            )
-        )
 
         # Create new sticker pack
         await client.invoke(
@@ -160,29 +152,26 @@ async def kang_sticker_pack(client: Client, message: Message):
                 user_id=user_peer,
                 title=new_pack_title,
                 short_name=new_pack_name,
-                stickers=[],
+                stickers=[
+                    InputSticker(
+                        file_id=first_sticker.id,  # ✅ Correct sticker file reference
+                        emoji="🔥"
+                    )
+                ],
                 animated=False,
                 masks=False
             )
         )
 
+        # Add all stickers to the pack
         for sticker in sticker_set.documents:
-            file_path = await client.download_media(sticker)
-            uploaded = await client.invoke(
-                InputMediaUploadedDocument(
-                    file=file_path,
-                    attributes=[DocumentAttributeSticker(emojis="🔥")]
-                )
-            )
-
             await client.invoke(
                 AddStickerToSet(
                     user_id=user_peer,
                     stickerset=InputStickerSetShortName(short_name=new_pack_name),
-                    sticker=InputDocument(
-                        id=uploaded.id,
-                        access_hash=uploaded.access_hash,
-                        file_reference=uploaded.file_reference
+                    sticker=InputSticker(
+                        file_id=sticker.id,
+                        emoji="🔥"
                     )
                 )
             )
