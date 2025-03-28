@@ -1,8 +1,9 @@
 import os
 from pyrogram import Client, filters
 from pyrogram.raw.functions.messages import GetStickerSet, GetDocumentByHash
-from pyrogram.raw.types import InputStickerSetShortName
-from pyrogram.types import Message, InputMediaDocument
+from pyrogram.raw.functions.stickers import CreateStickerSet, AddStickerToSet
+from pyrogram.raw.types import InputStickerSetShortName, InputStickerSetID, InputDocument, DocumentAttributeSticker
+from pyrogram.types import Message
 
 # 🔹 Telegram API Credentials (Get from my.telegram.org)
 API_ID = 25024171  
@@ -50,17 +51,46 @@ async def kang_sticker_pack(client: Client, message: Message):
             continue
 
         if sticker_file:
-            input_stickers.append(InputMediaDocument(sticker_file))  # ✅ Pyrofork-Compatible
             sticker_files.append(sticker_file)
+
+            # ✅ Prepare sticker document format for Pyrofork
+            input_stickers.append(
+                InputDocument(
+                    id=full_doc.document.id,
+                    access_hash=full_doc.document.access_hash,
+                    file_reference=full_doc.document.file_reference
+                )
+            )
 
     try:
         # Check if the user already has a sticker pack
         try:
-            existing_pack = await client.get_sticker_set(new_pack_name)
-            await client.add_sticker_to_set(user.id, new_pack_name, stickers=input_stickers)
+            existing_pack = await client.invoke(GetStickerSet(stickerset=InputStickerSetShortName(short_name=new_pack_name), hash=0))
+            await client.invoke(
+                AddStickerToSet(
+                    stickerset=InputStickerSetID(id=existing_pack.set.id, access_hash=existing_pack.set.access_hash),
+                    sticker=input_stickers[0],  # ✅ Pyrofork requires one sticker at a time
+                    emojis="✨"
+                )
+            )
             msg = f"✅ Stickers added to existing pack! [View Pack](https://t.me/addstickers/{new_pack_name})"
         except:
-            await client.create_sticker_set(user.id, new_pack_name, new_pack_title, stickers=input_stickers)
+            await client.invoke(
+                CreateStickerSet(
+                    user_id=user.id,
+                    title=new_pack_title,
+                    short_name=new_pack_name,
+                    stickers=[
+                        DocumentAttributeSticker(  # ✅ Required for creating stickers in Pyrofork
+                            sticker=input_stickers[0],  # ✅ Pyrofork requires one sticker at a time
+                            alt="✨",
+                            mask=False
+                        )
+                    ],
+                    animated=False,
+                    videos=False
+                )
+            )
             msg = f"✅ New sticker pack created! [View Pack](https://t.me/addstickers/{new_pack_name})"
 
         await message.reply_text(msg)
