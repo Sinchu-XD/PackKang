@@ -1,7 +1,6 @@
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.errors import ChatAdminRequired
-from pyrogram.types import ChatJoinRequest, Message
 
 # Bot Credentials
 API_ID = 25024171  # Replace with your API ID
@@ -11,17 +10,17 @@ BOT_TOKEN = "7043644719:AAFtq9vIrC9yRuY3Ge7Om8lYoEAGGadwR7Y"  # Replace with you
 # Initialize Bot
 app = Client("approve_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-@app.on_message(filters.command("approveall") & filters.group)
+@app.on_message(filters.command("approve") & filters.group)
 async def approve_requests(client, message):
-    """ Approves all pending join requests in a group/channel """
+    """ Approves all pending join requests in a group or channel """
     chat_id = message.chat.id
 
     try:
         approved_count = 0
+        requests = await client.get_chat_members(chat_id, filter="request")  # ✅ Using `get_chat_members`
 
-        # Iterate over the async generator properly
-        async for req in client.get_chat_join_requests(chat_id):
-            await client.approve_chat_join_request(chat_id, req.from_user.id)
+        for req in requests:
+            await client.approve_chat_join_request(chat_id, req.user.id)
             approved_count += 1
             await asyncio.sleep(1)  # Prevents floodwait
 
@@ -36,6 +35,7 @@ async def approve_requests(client, message):
         await message.reply_text(f"❌ Error: {str(e)}")
 
 print("✅ Bot is running...")
+
 
 
 
@@ -65,4 +65,3 @@ async def approve_single_request(client: Client, message: Message):
 
 print("✅ Bot is running...")
 app.run()
-9
