@@ -23,11 +23,7 @@ app = Client("sticker_kang_robot", api_id=API_ID, api_hash=API_HASH, session_str
 
 @app.on_message(filters.command("kangpack") & filters.reply)
 async def kang_sticker_pack(client: Client, message: Message):
-    """Clone a sticker pack using a Userbot (SUDO only)"""
-
-    # Check if user is a SUDO user
-    if message.from_user.id not in SUDO_USERS:
-        return await message.reply_text("🚫 You are not authorized to use this command.")
+    """Clone a sticker pack using a Userbot"""
 
     if not message.reply_to_message or not message.reply_to_message.sticker:
         return await message.reply_text("⚠️ Reply to a sticker to clone!")
@@ -60,12 +56,10 @@ async def kang_sticker_pack(client: Client, message: Message):
 
         # Upload first sticker to create the pack
         first_sticker = sticker_set.documents[0]
-        file_path = await client.download_media(first_sticker)
-        uploaded = await client.invoke(
-            InputMediaUploadedDocument(
-                file=file_path,
-                attributes=[DocumentAttributeSticker(emojis="🔥")]
-            )
+        input_document = InputDocument(
+            id=first_sticker.id,
+            access_hash=first_sticker.access_hash,
+            file_reference=first_sticker.file_reference
         )
 
         # Create new sticker pack
@@ -82,23 +76,17 @@ async def kang_sticker_pack(client: Client, message: Message):
 
         # Add all stickers to the pack
         for sticker in sticker_set.documents:
-            file_path = await client.download_media(sticker)
-            uploaded = await client.invoke(
-                InputMediaUploadedDocument(
-                    file=file_path,
-                    attributes=[DocumentAttributeSticker(emojis="🔥")]
-                )
+            input_document = InputDocument(
+                id=sticker.id,
+                access_hash=sticker.access_hash,
+                file_reference=sticker.file_reference
             )
 
             await client.invoke(
                 AddStickerToSet(
                     user_id=user_peer,
                     stickerset=InputStickerSetShortName(short_name=new_pack_name),
-                    sticker=InputDocument(
-                        id=uploaded.id,
-                        access_hash=uploaded.access_hash,
-                        file_reference=uploaded.file_reference
-                    )
+                    sticker=input_document
                 )
             )
 
@@ -109,4 +97,5 @@ async def kang_sticker_pack(client: Client, message: Message):
 
 print("✅ Userbot is running...")
 app.run()
+
       
