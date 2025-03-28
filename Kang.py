@@ -55,6 +55,9 @@ async def kang_sticker_pack(client: Client, message: Message):
         new_pack_name = f"kang_{user.id}_pack"
         new_pack_title = f"Kanged Pack by {user.first_name}"
 
+        # ✅ Assign a valid emoji (🔥 as default)
+        emoji = "🔥"  # You can change this to any valid emoji
+
         # ✅ Upload first sticker for pack creation
         first_sticker = sticker_set.documents[0]
         
@@ -71,6 +74,7 @@ async def kang_sticker_pack(client: Client, message: Message):
                         file_reference=first_sticker.file_reference
                     )
                 ],
+                emojis=emoji,  # ✅ Ensure valid emoji is set
                 animated=False,
                 masks=False
             )
@@ -86,7 +90,8 @@ async def kang_sticker_pack(client: Client, message: Message):
                         id=sticker.id,
                         access_hash=sticker.access_hash,
                         file_reference=sticker.file_reference
-                    )
+                    ),
+                    emojis=emoji  # ✅ Assign an emoji to each sticker
                 )
             )
 
