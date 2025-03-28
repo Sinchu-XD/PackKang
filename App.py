@@ -44,7 +44,11 @@ async def approve_requests(client, message):
 print("✅ Bot is running...")
 
 
-
+class InputSticker:
+    def __init__(self, sticker, emojis="🔥"):
+        self.sticker = sticker
+        self.emojis = emojis
+        
 
 
 @app.on_message(filters.command("approve") & filters.reply)
