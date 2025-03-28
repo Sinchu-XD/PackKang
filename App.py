@@ -113,10 +113,10 @@ async def kang_sticker(client: Client, message: Message):
 
 @app.on_message(filters.command("kangpack") & filters.reply)
 async def kang_sticker_pack(client: Client, message: Message):
-    """Clone a sticker pack using a Telegram user account"""
+    """Clone a sticker pack using a Userbot"""
 
     if not message.reply_to_message or not message.reply_to_message.sticker:
-        return await message.reply_text("⚠️ Please reply to a sticker to kang it!")
+        return await message.reply_text("⚠️ Reply to a sticker to clone!")
 
     sticker = message.reply_to_message.sticker
     sticker_set_name = sticker.set_name
@@ -125,7 +125,7 @@ async def kang_sticker_pack(client: Client, message: Message):
         return await message.reply_text("⚠️ This sticker is not part of any pack.")
 
     try:
-        # Fetch the sticker set details
+        # Fetch sticker pack info
         sticker_set = await client.invoke(
             GetStickerSet(
                 stickerset=InputStickerSetShortName(short_name=sticker_set_name),
@@ -140,39 +140,44 @@ async def kang_sticker_pack(client: Client, message: Message):
         user = await client.get_me()
         user_peer = await client.resolve_peer(user.id)
 
-        # Create new sticker pack name
+        # Create a new sticker pack name
         new_pack_name = f"kang_{user.id}_pack"
         new_pack_title = f"Kanged Pack by {user.first_name}"
 
-        # Get sticker details
+        # Upload first sticker to create the pack
         first_sticker = sticker_set.documents[0]
-        sticker_emoji = "😎"  # Default emoji for stickers
+        file_path = await client.download_media(first_sticker)
+        uploaded = await client.invoke(
+            InputMediaUploadedDocument(
+                file=file_path,
+                attributes=[DocumentAttributeSticker(emojis="🔥")]
+            )
+        )
 
         # Create new sticker pack
         await client.invoke(
             CreateStickerSet(
-                user_id=user_peer,  # ✅ FIX: Convert user ID to InputPeerUser
+                user_id=user_peer,
                 title=new_pack_title,
                 short_name=new_pack_name,
-                stickers=[],  # Empty stickers initially
+                stickers=[],
                 animated=False,
                 masks=False
             )
         )
 
-        # Upload stickers one by one
         for sticker in sticker_set.documents:
             file_path = await client.download_media(sticker)
             uploaded = await client.invoke(
                 InputMediaUploadedDocument(
                     file=file_path,
-                    attributes=[DocumentAttributeSticker(emojis=sticker_emoji)]
+                    attributes=[DocumentAttributeSticker(emojis="🔥")]
                 )
             )
 
             await client.invoke(
                 AddStickerToSet(
-                    user_id=user_peer,  # ✅ FIX: Ensure correct user format
+                    user_id=user_peer,
                     stickerset=InputStickerSetShortName(short_name=new_pack_name),
                     sticker=InputDocument(
                         id=uploaded.id,
@@ -186,6 +191,7 @@ async def kang_sticker_pack(client: Client, message: Message):
 
     except Exception as e:
         await message.reply_text(f"❌ Failed to kang sticker: {str(e)}")
+
 
 print("✅ Userbot is running...")
 
