@@ -1,7 +1,7 @@
 import os
 from pyrogram import Client, filters
 from pyrogram.raw.functions.messages import GetStickerSet
-from pyrogram.raw.types import InputStickerSetShortName, InputDocument
+from pyrogram.raw.types import InputStickerSetShortName, Document
 from pyrogram.types import Message
 
 # 🔹 Telegram API Credentials (Get from my.telegram.org)
@@ -28,40 +28,37 @@ async def kang_sticker_pack(client: Client, message: Message):
     try:
         # ✅ Correct Pyrofork API Call
         sticker_set = await client.invoke(GetStickerSet(stickerset=InputStickerSetShortName(short_name=sticker_set_name), hash=0))
-        stickers = sticker_set.documents  # ✅ Correct way to get stickers
+        
+        # 🔹 Extract sticker documents
+        stickers = getattr(sticker_set, "documents", None)
+        if not stickers:
+            return await message.reply_text("❌ No sticker documents found in this pack.")
+
     except Exception as e:
         return await message.reply_text(f"❌ Error fetching sticker pack: `{str(e)}`")
-
-    if not stickers:
-        return await message.reply_text("❌ No stickers found in this pack.")
 
     await message.reply_text(f"⚡ Cloning **{sticker_set.set.title}** ({len(stickers)} stickers)...")
 
     sticker_files = []
-    input_stickers = []
 
     for sticker_doc in stickers:
+        if not isinstance(sticker_doc, Document):
+            continue
+
         try:
             # ✅ Download sticker correctly
             sticker_file = await client.download_media(sticker_doc)
             sticker_files.append(sticker_file)
 
-            input_stickers.append(
-                InputDocument(
-                    id=sticker_doc.id,
-                    access_hash=sticker_doc.access_hash,
-                    file_reference=sticker_doc.file_reference
-                )
-            )
         except Exception as e:
             print(f"⚠ Failed to download sticker: {e}")
             continue
 
     # 🚨 **FIX: Ensure stickers exist before proceeding**
-    if not input_stickers:
+    if not sticker_files:
         return await message.reply_text("❌ No stickers found to clone!")
 
-    await message.reply_text(f"✅ Successfully cloned {len(input_stickers)} stickers!")
+    await message.reply_text(f"✅ Successfully cloned {len(sticker_files)} stickers!")
 
     # Clean up downloaded sticker files
     for file_path in sticker_files:
