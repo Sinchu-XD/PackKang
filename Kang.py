@@ -55,39 +55,38 @@ async def kang_sticker_pack(client: Client, message: Message):
         new_pack_name = f"kang_{user.id}_pack"
         new_pack_title = f"Kanged Pack by {user.first_name}"
 
-        # Upload first sticker to create the pack
+        # ✅ Upload first sticker for pack creation
         first_sticker = sticker_set.documents[0]
-        input_document = InputDocument(
-            id=first_sticker.id,
-            access_hash=first_sticker.access_hash,
-            file_reference=first_sticker.file_reference
-        )
-
-        # Create new sticker pack
+        
+        # ✅ Create new sticker pack with at least one sticker
         await client.invoke(
             CreateStickerSet(
                 user_id=user_peer,
                 title=new_pack_title,
                 short_name=new_pack_name,
-                stickers=[],
+                stickers=[
+                    InputDocument(
+                        id=first_sticker.id,
+                        access_hash=first_sticker.access_hash,
+                        file_reference=first_sticker.file_reference
+                    )
+                ],
                 animated=False,
                 masks=False
             )
         )
 
-        # Add all stickers to the pack
-        for sticker in sticker_set.documents:
-            input_document = InputDocument(
-                id=sticker.id,
-                access_hash=sticker.access_hash,
-                file_reference=sticker.file_reference
-            )
-
+        # ✅ Add remaining stickers to the pack
+        for sticker in sticker_set.documents[1:]:  # Skip the first, already added
             await client.invoke(
                 AddStickerToSet(
                     user_id=user_peer,
                     stickerset=InputStickerSetShortName(short_name=new_pack_name),
-                    sticker=input_document
+                    sticker=InputDocument(
+                        id=sticker.id,
+                        access_hash=sticker.access_hash,
+                        file_reference=sticker.file_reference
+                    )
                 )
             )
 
