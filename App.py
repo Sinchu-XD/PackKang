@@ -186,37 +186,6 @@ async def kang_sticker_pack(client: Client, message: Message):
         await message.reply_text(f"❌ Failed to kang sticker: {str(e)}")
 
 print("✅ Userbot is running...")
-app.run()
-🔥 Why This Fix Works
-✅ Uses InputPeerUser for user_id to avoid "int object has no attribute 'write'" error.
-✅ Downloads stickers before uploading them to prevent invalid file_id issues.
-✅ Uses InputDocument correctly in AddStickerToSet instead of raw integers.
-✅ Fully compatible with Pyrofork and handles animated stickers correctly.
-
-🚀 How to Run
-Run the bot:
-
-sh
-Copy
-Edit
-python App.py
-Reply to any sticker with:
-
-bash
-Copy
-Edit
-/kangpack
-Your new sticker pack will be created and linked! 🎉
-
-🔹 This version is guaranteed to work on Pyrofork. Let me know if you face any other issues! 🚀😊
-
-
-
-
-
-
-
-
 
 
 
@@ -226,5 +195,6 @@ async def start_command(client: Client, message: Message):
     """Handles the /start command."""
     await message.reply_text("Welcome to the Sticker Kanger Bot! Use /kang to kang a sticker, /kangpack to kang a whole pack!")
 
-app.run()
+
 print("Mar Ja Bc")
+app.run()
