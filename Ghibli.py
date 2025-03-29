@@ -6,10 +6,12 @@ from pyrogram.types import Message
 
 # Bot API credentials
 API_ID = 25024171
-API_HASH = "7952918661:AAEuNYscduy2e_WeGkhgKFSRdnQ1smqL1HE"
+API_HASH = "7e709c0f5a2b8ed7d5f90a48219cffd3"
+BOT_TOKEN = "7952918661:AAEuNYscduy2e_WeGkhgKFSRdnQ1smqL1HE"
+
 
 # Replicate API Key (Get from https://replicate.com/)
-REPLICATE_API_KEY = "your_replicate_api_key"
+REPLICATE_API_KEY = "r8_0nnJEG25Bixe9vnX5ohXunBanRiW1rg2iWK1r"
 
 # Initialize Bot
 bot = Client("AnimeGhibliBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
