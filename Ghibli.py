@@ -14,50 +14,46 @@ BOT_TOKEN = "7952918661:AAEuNYscduy2e_WeGkhgKFSRdnQ1smqL1HE"
 REPLICATE_API_KEY = "r8_0nnJEG25Bixe9vnX5ohXunBanRiW1rg2iWK1r"
 
 # Initialize Bot
+#bot = Client("AnimeGhibliBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+
+from pyrogram import Client, filters
+import requests
+import os
+
+# Initialize the bot
+API_ID = 25024171
+API_HASH = "7e709c0f5a2b8ed7d5f90a48219cffd3"
+BOT_TOKEN = "7952918661:AAEuNYscduy2e_WeGkhgKFSRdnQ1smqL1HE"
+
+
 bot = Client("AnimeGhibliBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-# Convert Image to Anime Style
-async def convert_to_anime(image_url: str):
-    try:
-        response = requests.post(
-            "https://api.replicate.com/v1/predictions",
-            headers={
-                "Authorization": f"Token {REPLICATE_API_KEY}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "version": "your_model_version",  # Get from Replicate AI model
-                "input": {"image": image_url},
-            },
-        )
-        result = response.json()
-        return result.get("output") if result else None
-    except Exception as e:
-        return None
+# Function to convert image using an AI API
+def convert_image(image_path, style):
+    url = "https://api.deepai.org/api/deepart"  # Replace with actual anime conversion API
+    headers = {"api-key": "739397db-49ca-4c67-b8ff-b59a7775f948"}
+    files = {"image": open(image_path, "rb")}
+    data = {"style": style}  # Example: 'ghibli' or 'anime'
+    
+    response = requests.post(url, files=files, headers=headers, data=data)
+    result = response.json()
+    return result.get("output_url")
 
-# Handle /start command
-@bot.on_message(filters.command("start"))
-async def start(client, message):
-    await message.reply_text("🎨 Send me an image, and I'll turn it into Anime or Ghibli style!")
-
-# Handle image messages
-@bot.on_message(filters.photo)
-async def process_image(client, message: Message):
-    msg = await message.reply_text("⏳ Processing image...")
-
-    # Download the image
-    image_path = await message.download()
-    image_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{image_path}"
-
-    # Convert to Anime
-    anime_url = await convert_to_anime(image_url)
-    if anime_url:
-        await message.reply_photo(anime_url, caption="🌸 Here is your **Anime-style** image!")
+@bot.on_message(filters.photo & filters.command(["anime", "ghibli"]))
+def image_to_anime(client, message):
+    style = "anime" if "anime" in message.command else "ghibli"
+    photo = message.photo.file_id
+    
+    file_path = bot.download_media(photo)
+    
+    converted_url = convert_image(file_path, style)
+    
+    if converted_url:
+        message.reply_photo(converted_url, caption=f"Here is your {style}-styled image!")
     else:
-        await message.reply_text("❌ Failed to convert image.")
+        message.reply_text("Failed to convert the image. Please try again later.")
+    
+    os.remove(file_path)  # Clean up the downloaded file
 
-    await msg.delete()
-
-# Run Bot
-print("🤖 Bot is running...")
+print("Bot is running...")
 bot.run()
