@@ -3,16 +3,17 @@ import requests
 import os
 
 # Initialize the bot
-API_ID = "your_api_id"
-API_HASH = "your_api_hash"
-BOT_TOKEN = "your_bot_token"
+API_ID = 25024171
+API_HASH = "7e709c0f5a2b8ed7d5f90a48219cffd3"
+BOT_TOKEN = "7952918661:AAEuNYscduy2e_WeGkhgKFSRdnQ1smqL1HE"
+
 
 bot = Client("image_converter_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 # Function to convert image using an AI API
 def convert_image(image_path, style):
     url = "https://api.deepai.org/api/deepart"  # Replace with actual anime conversion API
-    headers = {"api-key": "your_api_key"}
+    headers = {"api-key": "739397db-49ca-4c67-b8ff-b59a7775f948"}
     files = {"image": open(image_path, "rb")}
     data = {"style": style}  # Example: 'ghibli' or 'anime'
     
